@@ -2,8 +2,18 @@
 
 Elastico is a console application to maintain your Elasticsearch cluster.
 
-# Usage
+# State
 
+Elastico is work in progress. The software if by no means ready.
+
+# Build
+```
+$ go get github.com/constabulary/gb/...
+
+$ gb build
+```
+
+# Usage
 
 # Cluster
 ## Health
