@@ -1,6 +1,6 @@
 # Elastico
 
-Elastico is a console application to maintain your Elasticsearch cluster.
+Elastico is a console application to maintain your Elasticsearch cluster. It can be used to gain information about the cluster health, but also to copy indexes from one cluster to another.
 
 # State
 
