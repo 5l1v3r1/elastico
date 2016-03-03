@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -55,15 +56,25 @@ func run(fn func(*cli.Context) (json.M, error)) func(*cli.Context) {
 			return
 		}
 
+		buff := new(bytes.Buffer)
+		defer func() {
+			if err != nil {
+				fmt.Println(err.Error())
+				return
+			}
+
+			buff.WriteTo(os.Stdout)
+		}()
+
 		if c.GlobalBool("json") {
 			b, _ := json.MarshalIndent(resp, "", "  ")
-			os.Stdout.Write(b)
+			buff.Write(b)
 		} else {
 			if t, ok := templates[c.Command.Name]; ok {
-				t.Execute(os.Stdout, resp)
+				err = t.Execute(buff, resp)
 			} else {
 				b, _ := json.MarshalIndent(resp, "", "  ")
-				os.Stdout.Write(b)
+				buff.Write(b)
 			}
 		}
 		return

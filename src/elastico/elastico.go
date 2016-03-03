@@ -85,13 +85,33 @@ type elasticsearchResponse struct {
 
 */
 
-type Error struct {
-	State  string `json:"state"`
+type Response struct {
+	Error  *Error `json:"error"`
 	Status int64  `json:"status"`
 }
 
+type Error struct {
+	FailedShards []struct {
+		Index  string `json:"index"`
+		Node   string `json:"node"`
+		Reason struct {
+			Reason string `json:"reason"`
+			Type   string `json:"type"`
+		} `json:"reason"`
+		Shard int64 `json:"shard"`
+	} `json:"failed_shards"`
+	Grouped   bool   `json:"grouped"`
+	Phase     string `json:"phase"`
+	Reason    string `json:"reason"`
+	RootCause []struct {
+		Reason string `json:"reason"`
+		Type   string `json:"type"`
+	} `json:"root_cause"`
+	Type string `json:"type"`
+}
+
 func (e Error) Error() string {
-	return ""
+	return e.RootCause[0].Reason
 }
 
 func (wd *Elastico) do(req *http.Request, v interface{}) (*elasticsearchResponse, error) {
@@ -103,6 +123,12 @@ func (wd *Elastico) do(req *http.Request, v interface{}) (*elasticsearchResponse
 	defer resp.Body.Close()
 
 	var r io.Reader = resp.Body
+
+	if resp.StatusCode != 200 {
+		resp := Response{}
+		err = json.NewDecoder(r).Decode(&resp)
+		return nil, resp.Error
+	}
 
 	// r = io.TeeReader(r, os.Stdout)
 	err = json.NewDecoder(r).Decode(&v)

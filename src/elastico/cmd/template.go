@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"text/template"
 
@@ -17,6 +18,10 @@ var (
 		"yellow": color.YellowString,
 		"blue":   color.BlueString,
 		"pretty": pretty.Print,
+		"json": func(v interface{}) (string, error) {
+			b, err := json.MarshalIndent(v, "", "  ")
+			return string(b), err
+		},
 		"time": func(v interface{}) (string, error) {
 			return fmt.Sprintf("%d", (uint64(v.(float64)))/1000), nil
 			// return humanize.Time(uint64(v.(float64))), nil
