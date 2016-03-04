@@ -14,6 +14,7 @@ import (
 	json "elastico/json"
 
 	"github.com/codegangsta/cli"
+	"github.com/op/go-logging"
 )
 
 var (
@@ -92,6 +93,15 @@ func main() {
 	app.Commands = append(app.Commands, clusterCmds...)
 
 	app.Before = func(context *cli.Context) error {
+		backend1 := logging.NewLogBackend(os.Stderr, "", 0)
+		backend1Leveled := logging.AddModuleLevel(backend1)
+		backend1Leveled.SetLevel(logging.ERROR, "")
+		logging.SetBackend(backend1Leveled)
+
+		if context.GlobalBool("debug") {
+			backend1Leveled.SetLevel(logging.DEBUG, "")
+		}
+
 		t, err := elastico.New(context.String("host"))
 		if err != nil {
 			panic(err)
@@ -101,6 +111,9 @@ func main() {
 	}
 
 	app.Flags = []cli.Flag{
+		cli.BoolFlag{
+			Name: "debug",
+		},
 		cli.BoolFlag{
 			Name: "json",
 		},

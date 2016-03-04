@@ -29,6 +29,8 @@ The `-json` parameter will give you the plain json output instead of the formatt
 
 The `-host` parameter defines the host to operate on.
 
+The `-debug` parameter defines debugging mode for all requests and responses.
+
 # Cluster
 ## Health
 ``` 

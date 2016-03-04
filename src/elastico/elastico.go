@@ -6,9 +6,14 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/http/httputil"
 	"net/url"
 	"reflect"
+
+	"github.com/op/go-logging"
 )
+
+var log = logging.MustGetLogger("elastico:client")
 
 type Elastico struct {
 	Client  *http.Client
@@ -115,12 +120,20 @@ func (e Error) Error() string {
 }
 
 func (wd *Elastico) do(req *http.Request, v interface{}) (*elasticsearchResponse, error) {
+	if b, err := httputil.DumpRequest(req, true); err == nil {
+		log.Debug(string(b))
+	}
+
 	resp, err := wd.Client.Do(req)
 	if err != nil {
 		return nil, err
 	}
 
 	defer resp.Body.Close()
+
+	if b, err := httputil.DumpResponse(resp, true); err == nil {
+		log.Debug(string(b))
+	}
 
 	var r io.Reader = resp.Body
 
