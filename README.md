@@ -98,3 +98,13 @@ $ elastico snapshot:status
 $ cat query.json | elastico --host http://127.0.0.1:9200 search -index test -type test 
 ```
 
+# Get
+```
+$ elastico get -host {host} -index {index} -type {type} get {id}
+```
+
+# Put
+```
+$ cat doc.json | elastico put -host {host} -index {index} -type {type} put {id}
+```
+
