@@ -92,6 +92,10 @@ var searchCmds = []cli.Command{
 				Name:  "type",
 				Value: "",
 			},
+			cli.IntFlag{
+				Name:  "size",
+				Value: 10,
+			},
 		},
 	},
 }
@@ -122,7 +126,7 @@ func runSearch(c *cli.Context) (json.M, error) {
 		body = os.Stdin
 	}
 
-	req, err := e.NewRequest("GET", path, body)
+	req, err := e.NewRequest("GET", fmt.Sprintf("%s?size=%d", path, c.Int("size")), body)
 	if err != nil {
 		return nil, err
 	}
