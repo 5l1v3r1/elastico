@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 
@@ -16,13 +17,28 @@ Total:	    {{ .hits.total}}
 Max score:  {{ .hits.max_score}}
 
 {{ if gt (.hits.hits | len) 0 -}}
+== Hits
 Index				   Type	                  ID		                           Score
 ================================== ====================== ======================================== ====================
 {{range $hit := .hits.hits -}}
 {{- $hit._index | yellow | printf "%-44s" }}{{ $hit._type | printf "%-22s" }} {{ $hit._id | printf "%-40s" }} {{ $hit._score |  printf "%20.2f" }}
 {{end -}}
 {{- else -}}
-No hits found.
+{{end -}}
+{{ if gt (.aggregations | len) 0 }}
+== Aggregations
+{{range $name, $agg := .aggregations -}}
+{{- $hasBuckets := (has $agg "buckets") -}}
+{{ if $hasBuckets -}}
++ {{ $name }}
+{{range $bucket := $agg.buckets -}}
+{{ "  " }}{{ $bucket.key }}: {{ $bucket.doc_count }}
+{{- end }}
+  other: {{ $agg.sum_other_doc_count }}
+{{- else -}}
++ {{ $name }}: {{ $agg.value -}} 
+{{end }}
+{{ end }}
 {{end -}}
 `)
 	_ = registerTemplate("put", `{{. | json}}`)

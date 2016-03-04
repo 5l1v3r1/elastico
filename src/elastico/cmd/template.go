@@ -1,7 +1,7 @@
 package main
 
 import (
-	"encoding/json"
+	"elastico/json"
 	"fmt"
 	"text/template"
 
@@ -28,6 +28,15 @@ var (
 		},
 		"bytes": func(v interface{}) (string, error) {
 			return humanize.Bytes(uint64(v.(float64))), nil
+		},
+		"has": func(v interface{}, key string) (bool, error) {
+			fmt.Printf("%#v %s", v, key)
+			if m, ok := v.(json.M); !ok {
+				return false, nil
+			} else {
+				_, match := m[key]
+				return match, nil
+			}
 		},
 	}
 )
