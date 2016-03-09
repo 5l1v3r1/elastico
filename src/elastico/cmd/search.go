@@ -25,6 +25,7 @@ Index				   Type	                  ID		                           Score
 {{end -}}
 {{- else -}}
 {{end -}}
+{{ if (has . "aggregations") }}
 {{ if gt (.aggregations | len) 0 }}
 == Aggregations
 {{range $name, $agg := .aggregations -}}
@@ -39,6 +40,7 @@ Index				   Type	                  ID		                           Score
 + {{ $name }}: {{ $agg.value -}} 
 {{end }}
 {{ end }}
+{{end -}}
 {{end -}}
 `)
 	_ = registerTemplate("put", `{{. | json}}`)
