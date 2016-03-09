@@ -3,6 +3,7 @@ package main
 import (
 	"elastico/json"
 	"fmt"
+	"strings"
 	"text/template"
 
 	humanize "github.com/dustin/go-humanize"
@@ -17,6 +18,9 @@ var (
 		"green":  color.GreenString,
 		"yellow": color.YellowString,
 		"blue":   color.BlueString,
+		"trim": func(v string) string {
+			return strings.TrimSpace(v)
+		},
 		"pretty": pretty.Print,
 		"json": func(v interface{}) (string, error) {
 			b, err := json.MarshalIndent(v, "", "  ")

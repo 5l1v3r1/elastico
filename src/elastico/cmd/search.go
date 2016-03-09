@@ -23,8 +23,7 @@ Index				   Type	                  ID		                           Score
 {{range $hit := .hits.hits -}}
 {{- $hit._index | yellow | printf "%-44s" }}{{ $hit._type | printf "%-22s" }} {{ $hit._id | printf "%-40s" }} {{ $hit._score |  printf "%20.2f" }}
 {{range $name, $highlights := $hit.highlight -}}
-{{ $name }}: 
-{{ range $highlight := $highlights -}}* {{ $highlight }} {{end }}
+{{ $name | green }}: {{ range $highlight := $highlights -}} {{ $highlight | trim }} {{end }}
 {{end -}}
 {{end -}}
 {{- else -}}
