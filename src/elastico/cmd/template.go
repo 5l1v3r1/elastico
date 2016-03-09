@@ -3,7 +3,7 @@ package main
 import (
 	"elastico/json"
 	"fmt"
-	"strings"
+	"regexp"
 	"text/template"
 
 	humanize "github.com/dustin/go-humanize"
@@ -19,7 +19,8 @@ var (
 		"yellow": color.YellowString,
 		"blue":   color.BlueString,
 		"trim": func(v string) string {
-			return strings.TrimSpace(v)
+			re := regexp.MustCompile("\\s+")
+			return re.ReplaceAllLiteralString(v, " ")
 		},
 		"pretty": pretty.Print,
 		"json": func(v interface{}) (string, error) {
