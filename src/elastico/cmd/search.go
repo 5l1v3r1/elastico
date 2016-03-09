@@ -22,6 +22,10 @@ Index				   Type	                  ID		                           Score
 ================================== ====================== ======================================== ====================
 {{range $hit := .hits.hits -}}
 {{- $hit._index | yellow | printf "%-44s" }}{{ $hit._type | printf "%-22s" }} {{ $hit._id | printf "%-40s" }} {{ $hit._score |  printf "%20.2f" }}
+{{range $name, $highlights := $hit.highlight -}}
+{{ $name }}: 
+{{ range $highlight := $highlights -}}* {{ $highlight }} {{end }}
+{{end -}}
 {{end -}}
 {{- else -}}
 {{end -}}
@@ -98,10 +102,14 @@ var searchCmds = []cli.Command{
 				Name:  "size",
 				Value: 10,
 			},
+			cli.BoolFlag{
+				Name: "highlight",
+			},
 		},
 	},
 }
 
+// highlight
 func runSearch(c *cli.Context) (json.M, error) {
 	index := c.String("index")
 	type_ := c.String("type")
@@ -122,6 +130,18 @@ func runSearch(c *cli.Context) (json.M, error) {
 					"query": c.Args()[0],
 				},
 			},
+		}
+
+		if c.Bool("highlight") {
+			body.(json.M).Set("highlight", json.M{
+				"require_field_match": false,
+				"pre_tags":            []string{"\x1b[93m"},
+				"post_tags":           []string{"\x1b[0m"},
+				"tag_schema":          "styled",
+				"fields": json.M{
+					"*": json.M{},
+				},
+			})
 		}
 	} else if fi, err := os.Stdin.Stat(); err != nil {
 	} else if fi.Mode()&os.ModeNamedPipe > 0 {
