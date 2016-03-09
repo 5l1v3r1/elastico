@@ -16,9 +16,9 @@ import (
 )
 
 var (
-	_ = registerTemplate("index:create", `== Shards
+	_ = registerTemplate("index:create", `Index created.
 	`)
-	_ = registerTemplate("index:delete", `== Shards
+	_ = registerTemplate("index:delete", `Index deleted.
 	`)
 	_ = registerTemplate("index:stats", `== Shards
 failed		    {{ ._shards.failed }}
