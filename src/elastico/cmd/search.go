@@ -102,7 +102,7 @@ var searchCmds = []cli.Command{
 				Value: 10,
 			},
 			cli.BoolFlag{
-				Name: "highlight",
+				Name: "disable-highlight",
 			},
 		},
 	},
@@ -131,7 +131,7 @@ func runSearch(c *cli.Context) (json.M, error) {
 			},
 		}
 
-		if c.Bool("highlight") {
+		if !c.Bool("disable-highlight") {
 			body.(json.M).Set("highlight", json.M{
 				"require_field_match": false,
 				"pre_tags":            []string{"\x1b[93m"},

@@ -94,7 +94,9 @@ $ elastico snapshot:status
 
 # Search
 ## Search
+If you enable highlight, the matching results will shown.
 ```
+$ elastico --host http://127.0.0.1:9200 search (-disable-highlight) -index test -type test 
 $ cat query.json | elastico --host http://127.0.0.1:9200 search -index test -type test 
 ```
 
