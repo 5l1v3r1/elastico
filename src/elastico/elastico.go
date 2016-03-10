@@ -137,7 +137,10 @@ func (wd *Elastico) do(req *http.Request, v interface{}) (*elasticsearchResponse
 
 	var r io.Reader = resp.Body
 
-	if resp.StatusCode != 200 {
+	if resp.StatusCode >= http.StatusOK && resp.StatusCode < 300 {
+	} else if resp.StatusCode == http.StatusNotFound {
+		return nil, fmt.Errorf("Not found")
+	} else {
 		resp := Response{}
 		err = json.NewDecoder(r).Decode(&resp)
 		return nil, resp.Error
