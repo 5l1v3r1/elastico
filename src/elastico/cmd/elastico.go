@@ -111,6 +111,10 @@ func main() {
 		return nil
 	}
 
+	app.EnableBashCompletion = true
+	app.BashComplete = func(c *cli.Context) {
+	}
+
 	app.Flags = []cli.Flag{
 		cli.BoolFlag{
 			Name: "debug",
