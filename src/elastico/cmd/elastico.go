@@ -42,17 +42,18 @@ func registerTemplate(cmd string, t string) *template.Template {
 	return templates[cmd]
 }
 
+var ErrTemplate = template.Must(template.New("").Funcs(funcMap).Parse(`Error: {{ .Error }}
+`))
+
 var e *elastico.Elastico
 
 func run(fn func(*cli.Context) (json.M, error)) func(*cli.Context) {
 	return func(c *cli.Context) {
 		resp, err := fn(c)
 		if err != nil {
-			// error template
-			fmt.Println(err.Error())
-			return
+			ErrTemplate.Execute(os.Stderr, err)
+			os.Exit(1)
 		}
-
 		if resp == nil {
 			return
 		}
@@ -60,8 +61,8 @@ func run(fn func(*cli.Context) (json.M, error)) func(*cli.Context) {
 		buff := new(bytes.Buffer)
 		defer func() {
 			if err != nil {
-				fmt.Println(err.Error())
-				return
+				ErrTemplate.Execute(os.Stderr, err)
+				os.Exit(1)
 			}
 
 			buff.WriteTo(os.Stdout)
