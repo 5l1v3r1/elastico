@@ -125,7 +125,17 @@ func main() {
 		cli.StringFlag{
 			Name:   "host",
 			Value:  "http://127.0.0.1:9200",
-			EnvVar: "ELASTIC_HOST",
+			EnvVar: "ELASTICO_HOST",
+		},
+		cli.StringFlag{
+			Name:   "index",
+			Value:  "",
+			EnvVar: "ELASTICO_INDEX",
+		},
+		cli.StringFlag{
+			Name:   "type",
+			Value:  "",
+			EnvVar: "ELASTICO_TYPE",
 		},
 	}
 
