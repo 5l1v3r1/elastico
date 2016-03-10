@@ -103,12 +103,12 @@ func main() {
 			backend1Leveled.SetLevel(logging.DEBUG, "")
 		}
 
-		t, err := elastico.New(context.String("host"))
-		if err != nil {
-			panic(err)
+		if t, err := elastico.New(context.String("host")); err != nil {
+			return err
+		} else {
+			e = t
+			return nil
 		}
-		e = t
-		return nil
 	}
 
 	app.EnableBashCompletion = true
