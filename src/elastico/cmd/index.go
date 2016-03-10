@@ -16,10 +16,10 @@ import (
 )
 
 var (
-	_ = registerTemplate("index:create", `Index created.
-	`)
-	_ = registerTemplate("index:delete", `Index deleted.
-	`)
+	_ = registerTemplate("index:open", `Index opened.`)
+	_ = registerTemplate("index:close", `Index closed.`)
+	_ = registerTemplate("index:create", `Index created.`)
+	_ = registerTemplate("index:delete", `Index deleted.`)
 	_ = registerTemplate("index:stats", `== Shards
 failed		    {{ ._shards.failed }}
 successful	    {{ ._shards.successful }}
