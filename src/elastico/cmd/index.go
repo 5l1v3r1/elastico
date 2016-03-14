@@ -70,6 +70,7 @@ var indexCmds = []cli.Command{
 		Description: ``,
 		Action:      run(runIndexCreate),
 		Flags: []cli.Flag{
+			IndexRequiredFlag,
 			cli.IntFlag{
 				Name:  "replicas",
 				Value: 1,
@@ -86,6 +87,7 @@ var indexCmds = []cli.Command{
 		Description: ``,
 		Action:      run(runIndexUpdate),
 		Flags: []cli.Flag{
+			IndexRequiredFlag,
 			cli.IntFlag{
 				Name: "replicas",
 			},
@@ -99,7 +101,9 @@ var indexCmds = []cli.Command{
 		Usage:       "",
 		Description: ``,
 		Action:      run(runIndexGet),
-		Flags:       []cli.Flag{},
+		Flags: []cli.Flag{
+			IndexFlag,
+		},
 	},
 	cli.Command{
 		Name:        "index:delete",
@@ -107,10 +111,7 @@ var indexCmds = []cli.Command{
 		Description: ``,
 		Action:      run(runIndexDelete),
 		Flags: []cli.Flag{
-			cli.StringFlag{
-				Name:  "index",
-				Value: "",
-			},
+			IndexRequiredFlag,
 		},
 	},
 	cli.Command{
@@ -119,16 +120,10 @@ var indexCmds = []cli.Command{
 		Description: ``,
 		Action:      run(runIndexCopy),
 		Flags: []cli.Flag{
+			IndexRequiredFlag,
+			TypeFlag,
 			cli.StringFlag{
 				Name: "from",
-			},
-			cli.StringFlag{
-				Name:  "index",
-				Value: "",
-			},
-			cli.StringFlag{
-				Name:  "type",
-				Value: "",
 			},
 		},
 	},
@@ -138,14 +133,7 @@ var indexCmds = []cli.Command{
 		Description: ``,
 		Action:      run(runIndexRecovery),
 		Flags: []cli.Flag{
-			cli.StringFlag{
-				Name:  "index",
-				Value: "",
-			},
-			cli.StringFlag{
-				Name:  "type",
-				Value: "",
-			},
+			IndexRequiredFlag,
 		},
 	},
 	cli.Command{
@@ -154,14 +142,7 @@ var indexCmds = []cli.Command{
 		Description: ``,
 		Action:      run(runIndexStats),
 		Flags: []cli.Flag{
-			cli.StringFlag{
-				Name:  "index",
-				Value: "",
-			},
-			cli.StringFlag{
-				Name:  "type",
-				Value: "",
-			},
+			IndexRequiredFlag,
 		},
 	},
 	cli.Command{
@@ -169,24 +150,26 @@ var indexCmds = []cli.Command{
 		Usage:       "",
 		Description: ``,
 		Action:      run(runIndexOpen),
-		Flags:       []cli.Flag{},
+		Flags: []cli.Flag{
+			IndexRequiredFlag,
+		},
 	},
 	cli.Command{
 		Name:        "index:close",
 		Usage:       "",
 		Description: ``,
 		Action:      run(runIndexClose),
-		Flags:       []cli.Flag{},
+		Flags: []cli.Flag{
+			IndexRequiredFlag,
+		},
 	},
 }
 
 func runIndexOpen(c *cli.Context) (json.M, error) {
-	if len(c.Args()) == 0 {
-	}
+	path := c.String("index")
+	path = filepath.Join(path, "_open")
 
-	index := c.Args()[0]
-
-	req, err := e.NewRequest("POST", fmt.Sprintf("/%s/_open", index), nil)
+	req, err := e.NewRequest("POST", path, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -200,12 +183,10 @@ func runIndexOpen(c *cli.Context) (json.M, error) {
 }
 
 func runIndexClose(c *cli.Context) (json.M, error) {
-	if len(c.Args()) == 0 {
-	}
+	path := c.String("index")
+	path = filepath.Join(path, "_close")
 
-	index := c.Args()[0]
-
-	req, err := e.NewRequest("POST", fmt.Sprintf("/%s/_close", index), nil)
+	req, err := e.NewRequest("POST", path, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -219,10 +200,8 @@ func runIndexClose(c *cli.Context) (json.M, error) {
 }
 
 func runIndexUpdate(c *cli.Context) (json.M, error) {
-	if len(c.Args()) == 0 {
-	}
-
-	index := c.Args()[0]
+	path := c.String("index")
+	path = filepath.Join(path, "_settings")
 
 	body := json.M{
 		"index": json.M{},
@@ -236,7 +215,7 @@ func runIndexUpdate(c *cli.Context) (json.M, error) {
 		body["index"].(json.M)["refresh_interval"] = c.String("refresh-interval")
 	}
 
-	req, err := e.NewRequest("PUT", fmt.Sprintf("/%s/_settings", index), body)
+	req, err := e.NewRequest("PUT", path, body)
 	if err != nil {
 		return nil, err
 	}
@@ -250,12 +229,9 @@ func runIndexUpdate(c *cli.Context) (json.M, error) {
 }
 
 func runIndexGet(c *cli.Context) (json.M, error) {
-	index := "_all"
-	if len(c.Args()) > 0 {
-		index = c.Args()[0]
-	}
+	path := c.String("index")
 
-	req, err := e.NewRequest("GET", fmt.Sprintf("/%s", index), nil)
+	req, err := e.NewRequest("GET", path, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -269,7 +245,7 @@ func runIndexGet(c *cli.Context) (json.M, error) {
 }
 
 func runIndexCreate(c *cli.Context) (json.M, error) {
-	index := c.Args()[0]
+	path := c.String("index")
 
 	var body interface{}
 	if fi, err := os.Stdin.Stat(); err != nil {
@@ -285,7 +261,7 @@ func runIndexCreate(c *cli.Context) (json.M, error) {
 		}
 	}
 
-	req, err := e.NewRequest("POST", fmt.Sprintf("/%s", index), body)
+	req, err := e.NewRequest("POST", path, body)
 	if err != nil {
 		return nil, err
 	}
@@ -299,9 +275,9 @@ func runIndexCreate(c *cli.Context) (json.M, error) {
 }
 
 func runIndexDelete(c *cli.Context) (json.M, error) {
-	index := c.String("index")
+	path := c.String("index")
 
-	req, err := e.NewRequest("DELETE", fmt.Sprintf("/%s/", index), nil)
+	req, err := e.NewRequest("DELETE", path, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -315,16 +291,8 @@ func runIndexDelete(c *cli.Context) (json.M, error) {
 }
 
 func runIndexStats(c *cli.Context) (json.M, error) {
-	index := c.String("index")
-	type_ := c.String("type")
-
-	path := "_stats"
-	if type_ != "" {
-		path = filepath.Join(type_, path)
-	}
-	if index != "" {
-		path = filepath.Join(index, path)
-	}
+	path := c.String("index")
+	path = filepath.Join(path, "_stats")
 
 	req, err := e.NewRequest("GET", path, nil)
 	if err != nil {
@@ -340,16 +308,8 @@ func runIndexStats(c *cli.Context) (json.M, error) {
 }
 
 func runIndexRecovery(c *cli.Context) (json.M, error) {
-	index := c.String("index")
-	type_ := c.String("type")
-
-	path := "_recovery"
-	if type_ != "" {
-		path = filepath.Join(type_, path)
-	}
-	if index != "" {
-		path = filepath.Join(index, path)
-	}
+	path := c.String("index")
+	path = filepath.Join(path, "_recovery")
 
 	req, err := e.NewRequest("GET", path, nil)
 	if err != nil {
@@ -365,15 +325,11 @@ func runIndexRecovery(c *cli.Context) (json.M, error) {
 }
 
 func runIndexCopy(c *cli.Context) (json.M, error) {
-	index := c.String("index")
-	type_ := c.String("type")
+	path := c.String("index")
+	path = filepath.Join(path, fmt.Sprintf("_search?sort=_doc&scroll=1m&size=1"))
 
-	path := "_search"
-	if type_ != "" {
-		path = filepath.Join(type_, path)
-	}
-	if index != "" {
-		path = filepath.Join(index, path)
+	if len(c.Args()) == 0 {
+		return nil, fmt.Errorf("You need to supply the destination location")
 	}
 
 	rel, err := url.Parse(c.Args()[0])
@@ -381,9 +337,7 @@ func runIndexCopy(c *cli.Context) (json.M, error) {
 		return nil, err
 	}
 
-	u := e.BaseURL.ResolveReference(rel)
-
-	dst, err := elastico.New(u.String())
+	dst, err := elastico.New(e.BaseURL.ResolveReference(rel).String())
 	if err != nil {
 		return nil, err
 	}
@@ -408,7 +362,7 @@ func runIndexCopy(c *cli.Context) (json.M, error) {
 
 	count := float64(0)
 
-	req, err := e.NewRequest("GET", fmt.Sprintf("%s?scroll=1m&size=100", path), body)
+	req, err := e.NewRequest("GET", path, body)
 	for err == nil {
 		var resp json.M
 		if err = e.Do(req, &resp); err != nil {

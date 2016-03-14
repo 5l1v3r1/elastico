@@ -7,7 +7,6 @@ import (
 	json "elastico/json"
 
 	"github.com/codegangsta/cli"
-	"github.com/kr/pretty"
 )
 
 var (
@@ -29,7 +28,7 @@ var snapshotCmds = []cli.Command{
 		Name:        "snapshot:register",
 		Usage:       "",
 		Description: ``,
-		Action:      runSnapshotRegister,
+		Action:      run(runSnapshotRegister),
 		Flags: []cli.Flag{
 			cli.StringFlag{
 				Name:  "type",
@@ -38,30 +37,52 @@ var snapshotCmds = []cli.Command{
 			cli.BoolFlag{
 				Name: "compress",
 			},
-			cli.StringFlag{
+			Required(cli.StringFlag{
 				Name: "location",
-			},
+			}),
 		},
 	},
 	cli.Command{
 		Name:        "snapshot:execute",
 		Usage:       "",
 		Description: ``,
-		Action:      runSnapshotExecute,
-		Flags:       []cli.Flag{},
+		Action:      run(runSnapshotExecute),
+		Flags: []cli.Flag{
+			Required(
+				cli.StringFlag{
+					Name: "repository",
+				},
+			),
+			Required(
+				cli.StringFlag{
+					Name: "snapshot",
+				},
+			),
+		},
 	},
 	cli.Command{
 		Name:        "snapshot:status",
 		Usage:       "",
 		Description: ``,
 		Action:      run(runSnapshotStatus),
-		Flags:       []cli.Flag{},
+		Flags: []cli.Flag{
+			Required(
+				cli.StringFlag{
+					Name: "repository",
+				},
+			),
+			Required(
+				cli.StringFlag{
+					Name: "snapshot",
+				},
+			),
+		},
 	},
 }
 
 func runSnapshotStatus(c *cli.Context) (json.M, error) {
-	repository := c.Args()[0]
-	snapshot := c.Args()[1]
+	repository := c.String("repository")
+	snapshot := c.String("snapshot")
 
 	req, err := e.NewRequest("GET", fmt.Sprintf("/_snapshot/%s/%s/_status", repository, snapshot), nil)
 	if err != nil {
@@ -76,28 +97,30 @@ func runSnapshotStatus(c *cli.Context) (json.M, error) {
 	return resp, nil
 }
 
-func runSnapshotExecute(c *cli.Context) {
-	repository := c.Args()[0]
-	snapshot := c.Args()[1]
+func runSnapshotExecute(c *cli.Context) (json.M, error) {
+	repository := c.String("repository")
+	snapshot := c.String("snapshot")
 
 	body := json.M{}
 
 	req, err := e.NewRequest("PUT", fmt.Sprintf("/_snapshot/%s/%s?wait_for_completion=true", repository, snapshot), body)
 	if err != nil {
-		fmt.Println(err.Error())
-		return
+		return nil, err
 	}
 
-	var resp interface{}
+	var resp json.M
 	if err := e.Do(req, &resp); err != nil {
-		fmt.Println(err.Error())
-		return
+		return nil, err
 	}
 
-	pretty.Print(resp)
+	return resp, nil
 }
 
-func runSnapshotRegister(c *cli.Context) {
+func runSnapshotRegister(c *cli.Context) (json.M, error) {
+	if len(c.Args()) == 0 {
+		return nil, fmt.Errorf("You need to supply the name of the snapshot")
+	}
+
 	name := c.Args()[0]
 	location := c.String("location")
 	type_ := c.String("type")
@@ -112,17 +135,15 @@ func runSnapshotRegister(c *cli.Context) {
 
 	req, err := e.NewRequest("PUT", fmt.Sprintf("/_snapshot/%s", name), body)
 	if err != nil {
-		fmt.Println(err.Error())
-		return
+		return nil, err
 	}
 
-	var resp interface{}
+	var resp json.M
 	if err := e.Do(req, &resp); err != nil {
-		fmt.Println(err.Error())
-		return
+		return nil, err
 	}
 
-	pretty.Print(resp)
+	return resp, nil
 }
 
 func runSnapshotGet(c *cli.Context) (json.M, error) {

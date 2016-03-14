@@ -46,57 +46,18 @@ Index				   Type	                  ID		                           Score
 {{end -}}
 {{end -}}
 `)
-	_ = registerTemplate("put", `{{. | json}}`)
-	_ = registerTemplate("get", `{{._source | json}}`)
 )
 
 var searchCmds = []cli.Command{
-	cli.Command{
-		Name:        "get",
-		Usage:       "",
-		Description: ``,
-		Action:      run(runGet),
-		Flags: []cli.Flag{
-			cli.StringFlag{
-				Name:  "index",
-				Value: "",
-			},
-			cli.StringFlag{
-				Name:  "type",
-				Value: "",
-			},
-		},
-	},
-	cli.Command{
-		Name:        "put",
-		Usage:       "",
-		Description: ``,
-		Action:      run(runPut),
-		Flags: []cli.Flag{
-			cli.StringFlag{
-				Name:  "index",
-				Value: "",
-			},
-			cli.StringFlag{
-				Name:  "type",
-				Value: "",
-			},
-		},
-	},
 	cli.Command{
 		Name:        "search",
 		Usage:       "",
 		Description: ``,
 		Action:      run(runSearch),
 		Flags: []cli.Flag{
-			cli.StringFlag{
-				Name:  "index",
-				Value: "",
-			},
-			cli.StringFlag{
-				Name:  "type",
-				Value: "",
-			},
+			IndexFlag,
+			TypeFlag,
+			FieldFlag,
 			cli.IntFlag{
 				Name:  "size",
 				Value: 10,
@@ -110,16 +71,9 @@ var searchCmds = []cli.Command{
 
 // highlight
 func runSearch(c *cli.Context) (json.M, error) {
-	index := c.String("index")
-	type_ := c.String("type")
-
-	path := "_search"
-	if type_ != "" {
-		path = filepath.Join(type_, path)
-	}
-	if index != "" {
-		path = filepath.Join(index, path)
-	}
+	path := c.String("index")
+	path = filepath.Join(path, c.String("type"))
+	path = filepath.Join(path, fmt.Sprintf("_search?size=%d", c.Int("size")))
 
 	var body interface{}
 	if len(c.Args()) > 0 {
@@ -147,64 +101,7 @@ func runSearch(c *cli.Context) (json.M, error) {
 		body = os.Stdin
 	}
 
-	req, err := e.NewRequest("GET", fmt.Sprintf("%s?size=%d", path, c.Int("size")), body)
-	if err != nil {
-		return nil, err
-	}
-
-	var resp json.M
-	if err := e.Do(req, &resp); err != nil {
-		return nil, err
-	}
-
-	return resp, nil
-}
-
-func runPut(c *cli.Context) (json.M, error) {
-	index := c.String("index")
-	type_ := c.String("type")
-
-	path := c.Args()[0]
-	if type_ != "" {
-		path = filepath.Join(type_, path)
-	}
-	if index != "" {
-		path = filepath.Join(index, path)
-	}
-
-	var body interface{}
-	if fi, err := os.Stdin.Stat(); err != nil {
-		return nil, err
-	} else if fi.Mode()&os.ModeNamedPipe > 0 {
-		body = os.Stdin
-	}
-
-	req, err := e.NewRequest("PUT", path, body)
-	if err != nil {
-		return nil, err
-	}
-
-	var resp json.M
-	if err := e.Do(req, &resp); err != nil {
-		return nil, err
-	}
-
-	return resp, nil
-}
-
-func runGet(c *cli.Context) (json.M, error) {
-	index := c.String("index")
-	type_ := c.String("type")
-
-	path := c.Args()[0]
-	if type_ != "" {
-		path = filepath.Join(type_, path)
-	}
-	if index != "" {
-		path = filepath.Join(index, path)
-	}
-
-	req, err := e.NewRequest("GET", path, nil)
+	req, err := e.NewRequest("GET", path, body)
 	if err != nil {
 		return nil, err
 	}

@@ -49,6 +49,21 @@ var e *elastico.Elastico
 
 func run(fn func(*cli.Context) (json.M, error)) func(*cli.Context) {
 	return func(c *cli.Context) {
+		for _, flag := range c.Command.Flags {
+			if _, ok := flag.(RequiredFlag); !ok {
+				continue
+			}
+
+			if c.IsSet(flag.GetName()) {
+				continue
+			}
+
+			err := fmt.Errorf("Missing parameter %s.", flag.GetName())
+
+			ErrTemplate.Execute(os.Stderr, err)
+			os.Exit(1)
+		}
+
 		resp, err := fn(c)
 		if err != nil {
 			ErrTemplate.Execute(os.Stderr, err)
@@ -89,9 +104,11 @@ func main() {
 	app.Commands = []cli.Command{}
 
 	app.Commands = append(app.Commands, searchCmds...)
+	app.Commands = append(app.Commands, mappingCmds...)
 	app.Commands = append(app.Commands, snapshotCmds...)
 	app.Commands = append(app.Commands, indexCmds...)
 	app.Commands = append(app.Commands, clusterCmds...)
+	app.Commands = append(app.Commands, documentCmds...)
 
 	app.Before = func(context *cli.Context) error {
 		backend1 := logging.NewLogBackend(os.Stderr, "", 0)
@@ -126,16 +143,6 @@ func main() {
 			Name:   "host",
 			Value:  "http://127.0.0.1:9200",
 			EnvVar: "ELASTICO_HOST",
-		},
-		cli.StringFlag{
-			Name:   "index",
-			Value:  "",
-			EnvVar: "ELASTICO_INDEX",
-		},
-		cli.StringFlag{
-			Name:   "type",
-			Value:  "",
-			EnvVar: "ELASTICO_TYPE",
 		},
 	}
 
