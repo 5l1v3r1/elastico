@@ -142,7 +142,7 @@ var indexCmds = []cli.Command{
 		Description: ``,
 		Action:      run(runIndexStats),
 		Flags: []cli.Flag{
-			IndexRequiredFlag,
+			IndexFlag,
 		},
 	},
 	cli.Command{
