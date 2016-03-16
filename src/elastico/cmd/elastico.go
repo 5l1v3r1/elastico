@@ -17,6 +17,56 @@ import (
 	"github.com/op/go-logging"
 )
 
+func init() {
+	cli.AppHelpTemplate = `NAME:
+   {{.Name}} - {{.Usage}}
+USAGE:
+   {{if .UsageText}}{{.UsageText}}{{else}}{{.HelpName}} {{if .Flags}}[global options]{{end}}{{if .Commands}} command [command options]{{end}} {{if .ArgsUsage}}{{.ArgsUsage}}{{else}}[arguments...]{{end}}{{end}}
+   {{if .Version}}
+VERSION:
+   {{.Version}}
+   {{end}}{{if len .Authors}}
+AUTHOR(S):
+   {{range .Authors}}{{ . }}{{end}}
+   {{end}}{{if .Commands}}
+COMMANDS:
+   {{range .Commands}}{{join .Names ", "}}{{ "\t" }}{{.Usage}}
+   {{end}}{{end}}{{if .Flags}}
+GLOBAL OPTIONS:
+   {{range .Flags}}{{.}}
+   {{end}}{{end}}{{if .Copyright }}
+COPYRIGHT:
+   {{.Copyright}}
+   {{end}}
+`
+
+	cli.CommandHelpTemplate = `NAME:
+   {{.HelpName}} - {{.Usage}}
+USAGE:
+   {{.HelpName}}{{if .Flags}}{{end}} {{if .ArgsUsage}}{{.ArgsUsage}}{{else}}[arguments...]{{end}}{{if .Description}}
+DESCRIPTION:
+   {{.Description}}{{end}}{{if .Flags}}
+OPTIONS:
+   {{range .Flags}}{{.}}
+   {{end}}{{ end }}
+`
+
+	// The text template for the subcommand help topic.
+	// cli.go uses text/template to render templates. You can
+	// render custom help text by setting this variable.
+	cli.SubcommandHelpTemplate = `NAME:
+   {{.HelpName}} - {{.Usage}}
+USAGE:
+   {{.HelpName}} command{{if .Flags}} [command options]{{end}} {{if .ArgsUsage}}{{.ArgsUsage}}{{else}}[arguments...]{{end}}
+COMMANDS:
+   {{range .Commands}}{{join .Names ", "}}{{ "\t" }}{{.Usage}}
+   {{end}}{{if .Flags}}
+OPTIONS:
+   {{range .Flags}}{{.}}
+   {{end}}{{end}}
+`
+}
+
 var (
 	templates = map[string]*template.Template{}
 )
@@ -110,6 +160,8 @@ func main() {
 	app.Commands = append(app.Commands, clusterCmds...)
 	app.Commands = append(app.Commands, documentCmds...)
 
+	app.Version = "0.0.1"
+
 	app.Before = func(context *cli.Context) error {
 		backend1 := logging.NewLogBackend(os.Stderr, "", 0)
 		backend1Leveled := logging.AddModuleLevel(backend1)
@@ -134,15 +186,18 @@ func main() {
 
 	app.Flags = []cli.Flag{
 		cli.BoolFlag{
-			Name: "debug",
+			Name:  "debug",
+			Usage: "Enable debug mode",
 		},
 		cli.BoolFlag{
-			Name: "json",
+			Name:  "json",
+			Usage: "Return json output",
 		},
 		cli.StringFlag{
 			Name:   "host",
 			Value:  "http://127.0.0.1:9200",
 			EnvVar: "ELASTICO_HOST",
+			Usage:  "Host to operate on",
 		},
 	}
 

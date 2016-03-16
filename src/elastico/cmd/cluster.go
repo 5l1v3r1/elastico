@@ -40,14 +40,14 @@ status			    {{ .status | red }}
 var clusterCmds = []cli.Command{
 	cli.Command{
 		Name:        "cluster:state",
-		Usage:       "",
+		Usage:       "Retrieve cluster state",
 		Description: ``,
 		Action:      run(runClusterState),
 		Flags:       []cli.Flag{},
 	},
 	cli.Command{
 		Name:        "cluster:health",
-		Usage:       "",
+		Usage:       "Retrieve cluster health",
 		Description: ``,
 		Action:      run(runClusterHealth),
 		Flags: []cli.Flag{

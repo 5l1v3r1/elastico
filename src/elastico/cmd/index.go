@@ -66,7 +66,7 @@ Version created:    {{ $index.settings.index.version.created }}
 var indexCmds = []cli.Command{
 	cli.Command{
 		Name:        "index:create",
-		Usage:       "",
+		Usage:       "Create index",
 		Description: ``,
 		Action:      run(runIndexCreate),
 		Flags: []cli.Flag{
@@ -83,7 +83,7 @@ var indexCmds = []cli.Command{
 	},
 	cli.Command{
 		Name:        "index:update",
-		Usage:       "",
+		Usage:       "Update index settings",
 		Description: ``,
 		Action:      run(runIndexUpdate),
 		Flags: []cli.Flag{
@@ -98,7 +98,8 @@ var indexCmds = []cli.Command{
 	},
 	cli.Command{
 		Name:        "index:get",
-		Usage:       "",
+		Aliases:     []string{"index"},
+		Usage:       "Retrieve index info",
 		Description: ``,
 		Action:      run(runIndexGet),
 		Flags: []cli.Flag{
@@ -107,7 +108,7 @@ var indexCmds = []cli.Command{
 	},
 	cli.Command{
 		Name:        "index:delete",
-		Usage:       "",
+		Usage:       "Delete index",
 		Description: ``,
 		Action:      run(runIndexDelete),
 		Flags: []cli.Flag{
@@ -116,7 +117,7 @@ var indexCmds = []cli.Command{
 	},
 	cli.Command{
 		Name:        "index:copy",
-		Usage:       "",
+		Usage:       "Copy index to other host or index",
 		Description: ``,
 		Action:      run(runIndexCopy),
 		Flags: []cli.Flag{
@@ -129,7 +130,7 @@ var indexCmds = []cli.Command{
 	},
 	cli.Command{
 		Name:        "index:recovery",
-		Usage:       "",
+		Usage:       "Retrieve index recovery insights",
 		Description: ``,
 		Action:      run(runIndexRecovery),
 		Flags: []cli.Flag{
@@ -138,7 +139,7 @@ var indexCmds = []cli.Command{
 	},
 	cli.Command{
 		Name:        "index:stats",
-		Usage:       "",
+		Usage:       "Get index statistics",
 		Description: ``,
 		Action:      run(runIndexStats),
 		Flags: []cli.Flag{
@@ -147,7 +148,7 @@ var indexCmds = []cli.Command{
 	},
 	cli.Command{
 		Name:        "index:open",
-		Usage:       "",
+		Usage:       "Open index",
 		Description: ``,
 		Action:      run(runIndexOpen),
 		Flags: []cli.Flag{
@@ -156,7 +157,7 @@ var indexCmds = []cli.Command{
 	},
 	cli.Command{
 		Name:        "index:close",
-		Usage:       "",
+		Usage:       "Close index",
 		Description: ``,
 		Action:      run(runIndexClose),
 		Flags: []cli.Flag{

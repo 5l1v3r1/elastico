@@ -51,7 +51,7 @@ Index				   Type	                  ID		                           Score
 var searchCmds = []cli.Command{
 	cli.Command{
 		Name:        "search",
-		Usage:       "",
+		Usage:       "Search through index (and type)",
 		Description: ``,
 		Action:      run(runSearch),
 		Flags: []cli.Flag{

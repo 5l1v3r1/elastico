@@ -18,15 +18,16 @@ var (
 
 var snapshotCmds = []cli.Command{
 	cli.Command{
-		Name:        "snapshot",
-		Usage:       "",
+		Name:        "snapshot:get",
+		Aliases:     []string{"snapshot"},
+		Usage:       "Get snapshot info",
 		Description: ``,
 		Action:      run(runSnapshotGet),
 		Flags:       []cli.Flag{},
 	},
 	cli.Command{
 		Name:        "snapshot:register",
-		Usage:       "",
+		Usage:       "Register new snapshot",
 		Description: ``,
 		Action:      run(runSnapshotRegister),
 		Flags: []cli.Flag{
@@ -44,7 +45,7 @@ var snapshotCmds = []cli.Command{
 	},
 	cli.Command{
 		Name:        "snapshot:execute",
-		Usage:       "",
+		Usage:       "Execute the snapshot",
 		Description: ``,
 		Action:      run(runSnapshotExecute),
 		Flags: []cli.Flag{
@@ -62,7 +63,7 @@ var snapshotCmds = []cli.Command{
 	},
 	cli.Command{
 		Name:        "snapshot:status",
-		Usage:       "",
+		Usage:       "Get snapshot status",
 		Description: ``,
 		Action:      run(runSnapshotStatus),
 		Flags: []cli.Flag{

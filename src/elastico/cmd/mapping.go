@@ -32,7 +32,7 @@ Type:		{{ .type  }}
 var mappingCmds = []cli.Command{
 	cli.Command{
 		Name:        "mapping:edit",
-		Usage:       "",
+		Usage:       "Edit index mappings using editor",
 		Description: ``,
 		Action:      run(runMappingEdit),
 		Flags: []cli.Flag{
@@ -47,7 +47,7 @@ var mappingCmds = []cli.Command{
 	},
 	cli.Command{
 		Name:        "analyze",
-		Usage:       "",
+		Usage:       "Analyze arguments by index and field",
 		Description: ``,
 		Action:      run(runAnalyze),
 		Flags: []cli.Flag{

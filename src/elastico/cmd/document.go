@@ -24,24 +24,38 @@ Document deleted. `)
 var documentCmds = []cli.Command{
 	cli.Command{
 		Name:        "document:get",
-		Usage:       "",
-		Description: ``,
+		Usage:       "Retrieve document from index",
+		ArgsUsage:   "(-index {index}) (-type {type}) documentid",
+		UsageText:   "elastico document:get ",
+		Description: `Retrieve document from the index.`,
 		Action:      run(runDocumentGet),
-		Flags:       []cli.Flag{},
+		BashComplete: func(context *cli.Context) {
+			fmt.Println("BashCompl")
+		},
+		Flags: []cli.Flag{
+			IndexFlag,
+			TypeFlag,
+		},
 	},
 	cli.Command{
 		Name:        "document:delete",
-		Usage:       "",
+		Usage:       "Delete document from index",
 		Description: ``,
 		Action:      run(runDocumentDelete),
-		Flags:       []cli.Flag{},
+		Flags: []cli.Flag{
+			IndexFlag,
+			TypeFlag,
+		},
 	},
 	cli.Command{
 		Name:        "document:put",
-		Usage:       "",
+		Usage:       "Store document into index",
 		Description: ``,
 		Action:      run(runDocumentPut),
-		Flags:       []cli.Flag{},
+		Flags: []cli.Flag{
+			IndexFlag,
+			TypeFlag,
+		},
 	},
 }
 
