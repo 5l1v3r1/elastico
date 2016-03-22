@@ -36,6 +36,13 @@ var (
 			EnvVar: "ELASTICO_TYPE",
 		},
 	}
+	TemplateRequiredFlag = RequiredFlag{
+		cli.StringFlag{
+			Name:   "template",
+			Value:  "",
+			EnvVar: "",
+		},
+	}
 	FieldRequiredFlag = RequiredFlag{
 		cli.StringFlag{
 			Name:  "field",

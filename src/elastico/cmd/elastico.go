@@ -159,6 +159,7 @@ func main() {
 	app.Commands = append(app.Commands, indexCmds...)
 	app.Commands = append(app.Commands, clusterCmds...)
 	app.Commands = append(app.Commands, documentCmds...)
+	app.Commands = append(app.Commands, templateCmds...)
 
 	app.Version = "0.0.1"
 
