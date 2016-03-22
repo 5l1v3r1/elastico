@@ -16,6 +16,10 @@ import (
 )
 
 var (
+	_ = registerTemplate("mapping:get", `{{ . | json }}
+`)
+	_ = registerTemplate("mapping:put", `Mapping updated.
+`)
 	_ = registerTemplate("mapping:edit", `Mapping updated.
 `)
 	// should we show original values here? str [start: end]
@@ -30,6 +34,26 @@ Type:		{{ .type  }}
 )
 
 var mappingCmds = []cli.Command{
+	cli.Command{
+		Name:        "mapping:get",
+		Usage:       "Get index mappings",
+		Description: ``,
+		Action:      run(runMappingGet),
+		Flags: []cli.Flag{
+			IndexRequiredFlag,
+			TypeFlag,
+		},
+	},
+	cli.Command{
+		Name:        "mapping:put",
+		Usage:       "Put index mappings",
+		Description: ``,
+		Action:      run(runMappingPut),
+		Flags: []cli.Flag{
+			IndexRequiredFlag,
+			TypeFlag,
+		},
+	},
 	cli.Command{
 		Name:        "mapping:edit",
 		Usage:       "Edit index mappings using editor",
@@ -67,6 +91,59 @@ func runAnalyze(c *cli.Context) (json.M, error) {
 
 	body := bytes.NewBufferString(strings.Join(c.Args(), " "))
 	req, err := e.NewRequest("GET", path, body)
+	if err != nil {
+		return nil, err
+	}
+
+	var resp json.M
+	if err := e.Do(req, &resp); err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+func runMappingGet(c *cli.Context) (json.M, error) {
+	index := c.String("index")
+	type_ := c.String("type")
+
+	path := index
+	path = filepath.Join(path, "_mapping", type_)
+
+	req, err := e.NewRequest("GET", path, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var resp json.M
+	if err := e.Do(req, &resp); err != nil {
+		return nil, err
+	}
+
+	if type_ != "" {
+		return resp[index].(json.M)["mappings"].(json.M)[type_].(json.M), nil
+	}
+
+	return resp[index].(json.M)["mappings"].(json.M), nil
+}
+
+func runMappingPut(c *cli.Context) (json.M, error) {
+	index := c.String("index")
+	type_ := c.String("type")
+
+	path := index
+	if type_ != "" {
+		path = filepath.Join(path, "_mapping", type_)
+	}
+
+	var body interface{}
+	if fi, err := os.Stdin.Stat(); err != nil {
+		return nil, fmt.Errorf("No stdin body mapping")
+	} else if fi.Mode()&os.ModeNamedPipe > 0 {
+		body = os.Stdin
+	}
+
+	req, err := e.NewRequest("PUT", path, body)
 	if err != nil {
 		return nil, err
 	}
