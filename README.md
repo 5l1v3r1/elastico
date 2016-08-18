@@ -17,11 +17,10 @@ $ brew install elastico
 
 ### Compiling from sourcecode
 
-Make sure Go 1.6 is installed.
+Make sure at least Go 1.6 is installed.
 
 ```
-$ go get github.com/constabulary/gb/...
-$ gb build
+$ go get github.com/dutchcoders/elastico
 ```
 
 ## Contributions
@@ -45,6 +44,14 @@ The `-json` parameter will give you the plain json output instead of the formatt
 The `-host` parameter defines the url of the elasticsearch cluster to operate on.
 
 The `-debug` parameter defines debugging mode for all requests and responses.
+
+For convenience, the following environment variables can be set:
+
+`ELASTICO_HOST` the server to use e.g. http://127.0.0.1:9200/
+
+`ELASTICO_INDEX` the index to use
+
+`ELASTICO_TYPE` the type to use
 
 ### Templates
 
