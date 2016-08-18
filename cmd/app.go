@@ -97,8 +97,8 @@ var ErrTemplate = template.Must(template.New("").Funcs(funcMap).Parse(`Error: {{
 
 var e *client.Client
 
-func run(fn func(*cli.Context) (json.M, error)) func(*cli.Context) {
-	return func(c *cli.Context) {
+func run(fn func(*cli.Context) (json.M, error)) func(*cli.Context) error {
+	return func(c *cli.Context) error {
 		for _, flag := range c.Command.Flags {
 			if _, ok := flag.(RequiredFlag); !ok {
 				continue
@@ -120,7 +120,7 @@ func run(fn func(*cli.Context) (json.M, error)) func(*cli.Context) {
 			os.Exit(1)
 		}
 		if resp == nil {
-			return
+			return nil
 		}
 
 		buff := new(bytes.Buffer)
@@ -144,7 +144,8 @@ func run(fn func(*cli.Context) (json.M, error)) func(*cli.Context) {
 				buff.Write(b)
 			}
 		}
-		return
+
+		return nil
 	}
 }
 
