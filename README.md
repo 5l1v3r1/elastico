@@ -1,4 +1,4 @@
-# Elastico
+# Elastico [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/dutchcoders/elastico?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://travis-ci.org/dutchcoders/elastico.svg?branch=master)](https://travis-ci.org/dutchcoders/elastico)
 
 The **elastico** utility works on your Elasticsearch cluster(s). You can use it to gain cluster status, search through indexes and types, copy indexes from one cluster to another, create and restore backups. 
 
